@@ -1,0 +1,43 @@
+import speech_recognition as sr
+
+def recognize_speech(language_code='en-US'):
+    recognizer = sr.Recognizer()
+    microphone = sr.Microphone()
+
+    with microphone as source:
+        print("Adjusting for ambient noise... Please wait.")
+        recognizer.adjust_for_ambient_noise(source)
+        print("Listening...")
+        audio = recognizer.listen(source)
+
+    try:
+        print("Recognizing...")
+        text = recognizer.recognize_google(audio, language=language_code)
+        return text
+    except sr.UnknownValueError:
+        return "Sorry, I did not understand that."
+    except sr.RequestError:
+        return "Sorry, I am unable to access the speech recognition service."
+
+if __name__ == "__main__":
+    language_options = {
+        'hindi': 'hi-IN',   # Hindi
+        'telugu': 'te-IN',   # Telugu
+        'tamil': 'ta-IN'    # Tamil
+    }
+
+    print("Please say the language you want to use: Hindi, Telugu, or Tamil.")
+    recognized_text = recognize_speech()
+
+    print(f"You said: {recognized_text}")
+
+    chosen_language = recognized_text.lower().strip()
+
+    if chosen_language in language_options:
+        language_code = language_options[chosen_language]
+        print(f"Selected language: {language_code}")
+        print("You can start speaking now...")
+        recognized_text = recognize_speech(language_code)
+        print("Recognized Speech:", recognized_text)
+    else:
+        print("Invalid choice. Please restart and choose a valid language.")
